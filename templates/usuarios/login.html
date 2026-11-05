@@ -1,0 +1,27 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresar · Cotizador CINTAC</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+<div class="centrado">
+  <div class="franja">
+    <h1>Cotizador Interno de Fletes de Importación<small>Gerencia de Abastecimiento · COMEX</small></h1>
+    <div class="caja">
+      <h2>Iniciar sesión</h2>
+      {% include 'partes/mensajes.html' %}
+      <form method="post" autocomplete="off">{% csrf_token %}
+        {% if form.non_field_errors %}<div class="alerta error">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>{% endif %}
+        {% include 'partes/campo.html' with campo=form.username %}
+        {% include 'partes/campo.html' with campo=form.password %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <button class="btn btn-primario" style="width:100%">Ingresar</button>
+      </form>
+    </div>
+  </div>
+  <div class="pie-logo"><div class="logo">CINTAC<small>Una empresa del GRUPO CINTAC</small></div></div>
+</div>
+</body>
+</html>

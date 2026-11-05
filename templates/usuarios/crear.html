@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block titulo %}Nuevo usuario · CINTAC{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Nuevo usuario</h1><p>Se genera una contraseña temporal automática; el usuario deberá cambiarla en su primer ingreso.</p></div>
+<div class="tarjeta">
+  <h2>Datos del usuario</h2>
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="alerta error">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="rejilla">
+      {% include 'partes/campo.html' with campo=form.first_name %}
+      {% include 'partes/campo.html' with campo=form.last_name %}
+      {% include 'partes/campo.html' with campo=form.username %}
+      {% include 'partes/campo.html' with campo=form.rol %}
+    </div>
+    <button class="btn btn-primario">Crear usuario</button>
+    <a class="btn btn-borde" href="{% url 'usuarios:lista' %}">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

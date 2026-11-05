@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block titulo %}Comparador · CINTAC{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Comparador de Embarcadores</h1><p>Evalúa las alternativas disponibles para una misma ruta y detecta la más conveniente.</p></div>
+<div class="tarjeta">
+  <h2>Parámetros de comparación</h2>
+  <form method="get">
+    <div class="rejilla">
+      {% include 'partes/campo.html' with campo=form.ruta %}
+      {% include 'partes/campo.html' with campo=form.toneladas %}
+      {% include 'partes/campo.html' with campo=form.fob_usd %}
+      {% include 'partes/campo.html' with campo=form.tipo_cambio %}
+    </div>
+    {% include 'partes/campo.html' with campo=form.acogido_tlc %}
+    <button class="btn btn-primario">Comparar</button>
+  </form>
+</div>
+{% if comparadas %}
+<div class="tarjetas">
+  {% for c in comparadas %}
+  <div class="opcion {% if c.es_mas_conveniente %}mejor{% endif %}">
+    {% if c.es_mas_conveniente %}<span class="etiqueta">★ MÁS CONVENIENTE</span>{% endif %}
+    {% if c.es_mas_rapida %}<span class="etiqueta rapida">⚡ MÁS RÁPIDO</span>{% endif %}
+    <h3>{{ c.opcion.embarcador }}</h3>
+    <p style="color:var(--gris)">{% if c.opcion.tipo_cobro == 'CONTENEDOR' %}Por contenedor{% else %}Por tonelada{% endif %} · US$ {{ c.opcion.monto|floatformat:"2g" }}</p>
+    <div class="total">US$ {{ c.resultado.total_usd|floatformat:"2g" }}</div>
+    <p style="color:var(--gris)">$ {{ c.resultado.total_clp|floatformat:"0g" }} CLP</p>
+    <p>Flete con margen: US$ {{ c.resultado.flete_total|floatformat:"2g" }} (+{{ c.resultado.porcentaje_contingencia_visible }} % contingencia)<br>
+       Tránsito: {{ c.opcion.dias_transito }} días · Contenedores: {{ c.resultado.contenedores }}</p>
+  </div>
+  {% endfor %}
+</div>
+{% if ahorro %}<div class="ahorro">La opción más conveniente ahorra <b>US$ {{ ahorro|floatformat:"2g" }}</b> frente a la más cara.</div>{% endif %}
+{% elif form.is_bound and not form.errors %}<div class="alerta info">No hay tarifas para esa ruta.</div>
+{% endif %}
+{% endblock %}

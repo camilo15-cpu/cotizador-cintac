@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ cotizacion.numero }} · CINTAC{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Cotización {{ cotizacion.numero }}</h1>
+  <p>Cintac · Gerencia de Abastecimiento · COMEX — {{ cotizacion.creada_en|date:"d/m/Y H:i" }} — elaborada por {{ cotizacion.usuario.get_full_name|default:cotizacion.usuario.username }}</p></div>
+<div class="tarjeta">
+  <h2>Datos de la operación</h2>
+  <div class="rejilla">
+    <div><small>Referencia</small><br><b>{{ cotizacion.referencia|default:"—" }}</b></div>
+    <div><small>Solicitante</small><br><b>{{ cotizacion.solicitante }}</b></div>
+    <div><small>Ruta</small><br><b>{{ cotizacion.ruta }}</b></div>
+    <div><small>Embarcador</small><br><b>{{ cotizacion.embarcador }}</b></div>
+    <div><small>Carga</small><br><b>{{ cotizacion.toneladas|floatformat:"2g" }} t en {{ cotizacion.contenedores }} contenedor(es)</b></div>
+    <div><small>Tránsito</small><br><b>{{ cotizacion.dias_transito }} días</b></div>
+    <div><small>Régimen</small><br><b>{% if cotizacion.acogido_tlc %}Acogido a TLC{% else %}Sin TLC{% endif %}</b></div>
+    <div><small>Tipo de cambio</small><br><b>$ {{ cotizacion.tipo_cambio|floatformat:"2g" }} / USD</b></div>
+  </div>
+</div>
+<div class="tarjeta">
+  <h2>Desglose de costos</h2>
+  <p>Total de importación: <span class="kpi">$ {{ cotizacion.total_clp|floatformat:"0g" }}</span> &nbsp; <b>(US$ {{ cotizacion.total_usd|floatformat:"2g" }})</b></p>
+  <div class="tabla"><table>
+    <thead><tr><th>Concepto</th><th class="num">USD</th><th class="num">CLP</th></tr></thead>
+    <tbody>
+      <tr><td>Valor FOB</td><td class="num">{{ cotizacion.fob_usd|floatformat:"2g" }}</td><td></td></tr>
+      <tr><td>Flete base (US$ {{ cotizacion.tarifa_usd|floatformat:"2g" }} × cantidad)</td><td class="num">{{ cotizacion.flete_base_usd|floatformat:"2g" }}</td><td></td></tr>
+      <tr><td>Contingencia logística (+{{ cotizacion.porcentaje_contingencia_visible }} %)</td><td class="num">{{ cotizacion.recargo_usd|floatformat:"2g" }}</td><td></td></tr>
+      <tr class="subtotal"><td>Flete total con margen</td><td class="num">{{ cotizacion.flete_total_usd|floatformat:"2g" }}</td><td></td></tr>
+      <tr><td>Seguro (exento, póliza global CINTAC)</td><td class="num">0,00</td><td></td></tr>
+      <tr class="subtotal"><td>Valor CIF</td><td class="num">{{ cotizacion.cif_usd|floatformat:"2g" }}</td><td></td></tr>
+      <tr><td>Arancel {% if cotizacion.acogido_tlc %}(TLC 0 %){% else %}(6 % sobre CIF){% endif %}</td><td class="num">{{ cotizacion.arancel_usd|floatformat:"2g" }}</td><td></td></tr>
+      <tr><td>IVA importación (19 % sobre CIF + arancel = US$ {{ cotizacion.base_iva_usd|floatformat:"2g" }})</td><td class="num">{{ cotizacion.iva_usd|floatformat:"2g" }}</td><td></td></tr>
+      <tr class="total"><td>TOTAL</td><td class="num">{{ cotizacion.total_usd|floatformat:"2g" }}</td><td class="num">{{ cotizacion.total_clp|floatformat:"0g" }}</td></tr>
+    </tbody>
+  </table></div>
+  <p style="color:var(--gris);font-size:12px">Tarifas referenciales sujetas a confirmación del embarcador. Documento de uso interno.</p>
+  <p class="no-print">
+    <button class="btn btn-primario" onclick="window.print()">🖨 Imprimir / Exportar a PDF</button>
+    <a class="btn btn-borde" href="{% url 'cotizaciones:simulador' %}">Nueva cotización</a>
+  </p>
+</div>
+{% endblock %}

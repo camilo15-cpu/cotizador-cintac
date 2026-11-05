@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block titulo %}Acceso denegado · CINTAC{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Acceso denegado</h1><p>Tu rol no tiene permiso para ver esta sección. El intento quedó registrado en la auditoría.</p></div>
+<a class="btn btn-primario" href="{% url 'cotizaciones:simulador' %}">Volver al simulador</a>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block titulo %}Auditoría · CINTAC{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Auditoría</h1><p>Registro de solo lectura de todo lo realizado en el sistema.</p></div>
+<div class="tarjeta">
+  <h2>Filtros</h2>
+  <form method="get">
+    <div class="rejilla">
+      <div class="campo"><label>Acción</label><select name="accion"><option value="">Todas</option>
+        {% for valor, nombre in acciones %}<option value="{{ valor }}" {% if filtros.accion == valor %}selected{% endif %}>{{ nombre }}</option>{% endfor %}</select></div>
+      <div class="campo"><label>Usuario</label><input type="text" name="usuario" value="{{ filtros.usuario }}"></div>
+      <div class="campo"><label>Desde</label><input type="date" name="desde" value="{{ filtros.desde }}"></div>
+      <div class="campo"><label>Hasta</label><input type="date" name="hasta" value="{{ filtros.hasta }}"></div>
+    </div>
+    <button class="btn btn-primario">Filtrar</button>
+    <a class="btn btn-borde" href="{% url 'auditoria:lista' %}">Limpiar</a>
+  </form>
+</div>
+<div class="tarjeta">
+  <h2>Registros ({{ paginator.count }})</h2>
+  <div class="tabla"><table>
+    <thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Acción</th><th>Objeto</th><th>IP</th><th>Detalle</th></tr></thead>
+    <tbody>
+    {% for r in registros %}
+      <tr><td>{{ r.creado_en|date:"d/m/Y H:i:s" }}</td><td>{{ r.usuario_nombre|default:"—" }}</td>
+        <td><span class="pastilla">{{ r.accion }}</span></td>
+        <td>{{ r.objeto_tipo }} {{ r.objeto_id }}</td><td>{{ r.ip|default:"—" }}</td>
+        <td><small>{{ r.detalle_texto }}</small></td></tr>
+    {% empty %}<tr><td colspan="6">No hay registros con esos filtros.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% if is_paginated %}<div class="pagina">
+    {% if page_obj.has_previous %}<a class="btn btn-borde btn-sm" href="?{{ querystring }}&page={{ page_obj.previous_page_number }}">« Anterior</a>{% endif %}
+    <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a class="btn btn-borde btn-sm" href="?{{ querystring }}&page={{ page_obj.next_page_number }}">Siguiente »</a>{% endif %}
+  </div>{% endif %}
+</div>
+{% endblock %}

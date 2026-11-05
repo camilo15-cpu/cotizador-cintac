@@ -1,0 +1,28 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cambiar contraseña · Cotizador CINTAC</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+<div class="centrado">
+  <div class="franja">
+    <div class="caja" style="max-width:460px">
+      <h2>{% if obligatorio %}Cambio de contraseña obligatorio{% else %}Cambiar contraseña{% endif %}</h2>
+      {% if obligatorio %}<p style="color:var(--gris)">Es tu primer ingreso: reemplaza la contraseña temporal por una propia para continuar.</p>{% endif %}
+      {% include 'partes/mensajes.html' %}
+      <ul class="reglas">{% for r in reglas %}<li>{{ r }}</li>{% endfor %}<li>Las dos contraseñas deben ser idénticas.</li></ul>
+      <form method="post" autocomplete="off">{% csrf_token %}
+        {% include 'partes/campo.html' with campo=form.nueva_clave %}
+        {% include 'partes/campo.html' with campo=form.confirmar_clave %}
+        <button class="btn btn-primario" style="width:100%">Guardar y continuar</button>
+      </form>
+      <form method="post" action="{% url 'usuarios:logout' %}" style="margin-top:10px">{% csrf_token %}
+        <button class="btn btn-borde" style="width:100%">Cancelar y cerrar sesión</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Cotizador CINTAC{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar no-print">
+    <div class="marca">CINTAC</div>
+    <nav>
+      <a href="{% url 'cotizaciones:simulador' %}" class="{% if request.resolver_match.url_name == 'simulador' %}activo{% endif %}"> Simulador de Cotización</a>
+      <a href="{% url 'cotizaciones:comparador' %}" class="{% if request.resolver_match.url_name == 'comparador' %}activo{% endif %}"> Comparador de Embarcadores</a>
+      <a href="{% url 'cotizaciones:historial' %}" class="{% if request.resolver_match.url_name == 'historial' %}activo{% endif %}"> Historial</a>
+      {% if user.es_administrador %}
+      <a href="{% url 'tarifas:lista' %}" class="{% if request.resolver_match.namespace == 'tarifas' %}activo{% endif %}"> Mantenedor de Tarifas</a>
+      <a href="{% url 'usuarios:lista' %}" class="{% if request.resolver_match.url_name == 'lista' and request.resolver_match.namespace == 'usuarios' or request.resolver_match.url_name == 'crear' and request.resolver_match.namespace == 'usuarios' %}activo{% endif %}"> Gestión de Usuarios</a>
+      <a href="{% url 'auditoria:lista' %}" class="{% if request.resolver_match.namespace == 'auditoria' %}activo{% endif %}"> Auditoría</a>
+      {% endif %}
+    </nav>
+    <div class="sesion">
+      Sesión: <b>{{ user.username }}</b> ({{ user.get_rol_display }})<br>{{ user.get_full_name }}
+      <form method="post" action="{% url 'usuarios:logout' %}">{% csrf_token %}
+        <button class="btn btn-borde btn-sm" style="margin-top:10px;width:100%">Cerrar sesión</button>
+      </form>
+    </div>
+  </aside>
+  <main class="contenido">
+    {% include 'partes/mensajes.html' %}
+    {% block contenido %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>

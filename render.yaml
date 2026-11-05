@@ -1,0 +1,33 @@
+# Blueprint de Render: crea la base de datos PostgreSQL y el servicio web.
+databases:
+  - name: cintac-db
+    plan: free
+    databaseName: cintac
+    user: cintac
+
+services:
+  - type: web
+    name: cotizador-cintac
+    runtime: python
+    plan: free
+    buildCommand: "bash build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cintac-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: WEB_CONCURRENCY
+        value: "2"
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NOMBRE
+        value: Administrador CINTAC

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block titulo %}Usuarios · CINTAC{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Gestión de Usuarios</h1><p>Crea usuarios con contraseña temporal, desbloquea cuentas y administra roles.</p></div>
+<p><a class="btn btn-primario" href="{% url 'usuarios:crear' %}">＋ Nuevo usuario</a></p>
+<div class="tarjeta">
+  <h2>Usuarios registrados ({{ usuarios|length }})</h2>
+  <div class="tabla"><table>
+    <thead><tr><th>Nombre</th><th>Correo / Usuario</th><th>Rol</th><th>Estado</th><th>Contraseña</th><th></th></tr></thead>
+    <tbody>
+    {% for u in usuarios %}
+      <tr>
+        <td><b>{{ u.get_full_name|default:"—" }}</b>{% if u.pk == user.pk %} <small>(tú)</small>{% endif %}</td>
+        <td>{{ u.username }}</td>
+        <td><span class="pastilla {% if u.es_administrador %}admin{% endif %}">{{ u.get_rol_display }}</span></td>
+        <td><span class="pastilla {% if u.estado == 'Activo' %}ok{% elif u.estado == 'Bloqueado' %}mal{% else %}gris{% endif %}">{{ u.estado }}</span>
+            {% if u.intentos_fallidos and not u.bloqueado %}<br><small>{{ u.intentos_fallidos }} intento(s) fallido(s)</small>{% endif %}</td>
+        <td>{% if u.primer_ingreso %}<span class="pastilla">Temporal (pendiente de cambio)</span>{% else %}<span class="pastilla gris">Definitiva</span>{% endif %}</td>
+        <td class="acciones">
+          {% if u.bloqueado %}<form method="post" action="{% url 'usuarios:accion' u.pk 'desbloquear' %}">{% csrf_token %}<button class="btn btn-borde btn-sm">Desbloquear</button></form>{% endif %}
+          {% if u.pk != user.pk %}
+            {% if u.is_active %}<form method="post" action="{% url 'usuarios:accion' u.pk 'desactivar' %}">{% csrf_token %}<button class="btn btn-borde btn-sm">Desactivar</button></form>
+            {% else %}<form method="post" action="{% url 'usuarios:accion' u.pk 'activar' %}">{% csrf_token %}<button class="btn btn-borde btn-sm">Activar</button></form>{% endif %}
+            <form method="post" action="{% url 'usuarios:accion' u.pk 'restablecer' %}" onsubmit="return confirm('¿Generar una nueva contraseña temporal?');">{% csrf_token %}<button class="btn btn-borde btn-sm">Restablecer clave</button></form>
+            <form method="post" action="{% url 'usuarios:accion' u.pk 'eliminar' %}" onsubmit="return confirm('¿Eliminar este usuario?');">{% csrf_token %}<button class="btn btn-peligro btn-sm">Eliminar</button></form>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endblock %}

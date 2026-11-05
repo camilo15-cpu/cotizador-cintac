@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block titulo %}Historial · CINTAC{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Historial de cotizaciones</h1><p>{% if user.es_administrador %}Todas las cotizaciones del sistema.{% else %}Tus cotizaciones.{% endif %}</p></div>
+<div class="tarjeta">
+  <div class="tabla"><table>
+    <thead><tr><th>N°</th><th>Fecha</th>{% if user.es_administrador %}<th>Analista</th>{% endif %}<th>Ruta</th><th>Embarcador</th><th class="num">Total USD</th><th class="num">Total CLP</th><th></th></tr></thead>
+    <tbody>
+    {% for c in cotizaciones %}
+      <tr><td>{{ c.numero }}</td><td>{{ c.creada_en|date:"d/m/Y H:i" }}</td>
+        {% if user.es_administrador %}<td>{{ c.usuario.username }}</td>{% endif %}
+        <td>{{ c.ruta }}</td><td>{{ c.embarcador }}</td>
+        <td class="num">{{ c.total_usd|floatformat:"2g" }}</td><td class="num">{{ c.total_clp|floatformat:"0g" }}</td>
+        <td class="acciones"><a class="btn btn-borde btn-sm" href="{% url 'cotizaciones:detalle' c.pk %}">Ver</a></td></tr>
+    {% empty %}<tr><td colspan="8">Aún no hay cotizaciones.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% if is_paginated %}<div class="pagina">
+    {% if page_obj.has_previous %}<a class="btn btn-borde btn-sm" href="?page={{ page_obj.previous_page_number }}">« Anterior</a>{% endif %}
+    <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a class="btn btn-borde btn-sm" href="?page={{ page_obj.next_page_number }}">Siguiente »</a>{% endif %}
+  </div>{% endif %}
+</div>
+{% endblock %}

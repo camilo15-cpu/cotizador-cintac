@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block titulo %}Tarifas · CINTAC{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Mantenedor de Tarifas CINTAC</h1><p>Administra las tarifas de flete vigentes.</p></div>
+<p><a class="btn btn-primario" href="{% url 'tarifas:crear' %}">＋ Nueva tarifa</a></p>
+<div class="tarjeta">
+  <h2>Tarifas vigentes ({{ tarifas|length }})</h2>
+  <div class="tabla"><table>
+    <thead><tr><th>Embarcador</th><th>Origen</th><th>Destino</th><th>Cobro</th><th class="num">Tarifa USD</th><th class="num">Tránsito</th><th></th></tr></thead>
+    <tbody>
+    {% for t in tarifas %}
+      <tr>
+        <td><b>{{ t.embarcador.nombre }}</b></td><td>{{ t.puerto_origen.nombre }}</td><td>{{ t.puerto_destino.nombre }}</td>
+        <td>{{ t.get_tipo_cobro_display }}</td><td class="num">US$ {{ t.monto_usd|floatformat:"2g" }}</td><td class="num">{{ t.dias_transito }} días</td>
+        <td class="acciones">
+          <a class="btn btn-borde btn-sm" href="{% url 'tarifas:editar' t.pk %}">Editar</a>
+          <form method="post" action="{% url 'tarifas:eliminar' t.pk %}" onsubmit="return confirm('¿Eliminar esta tarifa?');">{% csrf_token %}<button class="btn btn-peligro btn-sm">Eliminar</button></form>
+        </td>
+      </tr>
+    {% empty %}<tr><td colspan="7">No hay tarifas registradas.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endblock %}

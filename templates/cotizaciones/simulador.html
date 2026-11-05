@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block titulo %}Simulador · CINTAC{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Simulador de Cotización</h1><p>Calcula el costo de importación: flete, contingencia, arancel e IVA. Máximo 25 t por contenedor (Decreto 75).</p></div>
+<div class="tarjeta">
+  <h2>Datos de la operación</h2>
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="alerta error">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="rejilla">
+      {% include 'partes/campo.html' with campo=form.referencia %}
+      {% include 'partes/campo.html' with campo=form.solicitante %}
+      {% include 'partes/campo.html' with campo=form.tarifa %}
+      {% include 'partes/campo.html' with campo=form.toneladas %}
+      {% include 'partes/campo.html' with campo=form.contenedores %}
+      {% include 'partes/campo.html' with campo=form.fob_usd %}
+      {% include 'partes/campo.html' with campo=form.dias_transito %}
+      {% include 'partes/campo.html' with campo=form.tipo_cambio %}
+    </div>
+    {% include 'partes/campo.html' with campo=form.acogido_tlc %}
+    <button class="btn btn-primario">Calcular y guardar cotización</button>
+  </form>
+</div>
+{% endblock %}
